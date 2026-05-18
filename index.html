@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -468,7 +468,12 @@
     /* ===========================
      PRINT STYLES
      =========================== */
-    @media print {
+      @media print {
+      @page {
+        size: auto;
+        margin: 0mm; /* Removes default browser headers (URL, Date, Page title) */
+      }
+
       * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -478,12 +483,14 @@
         background: #fff !important;
         color: #1a1a1a !important;
         font-family: 'Barlow', sans-serif;
+        margin: 15mm 15mm !important; /* Adds professional printable margins */
       }
 
       #app-header,
       #tab-bar,
       #tab-config,
       #sales-form-col,
+      #toast,
       .no-print {
         display: none !important;
       }
@@ -1175,7 +1182,7 @@
   </main>
 
   <!-- TOAST -->
-  <div id="toast">Configuración guardada</div>
+  <div id="toast" class="no-print">Configuración guardada</div>
 
   <!-- ============================================================
      JAVASCRIPT
