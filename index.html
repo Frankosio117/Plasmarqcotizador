@@ -1,0 +1,1781 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plasmarq — Cotizador de Herrería</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --coal: #1a1a1a;
+      --steel: #2c3e50;
+      --iron: #3d4f61;
+      --spark: #8CC63F;
+      --ember: #6FA832;
+      --ash: #7f8c8d;
+      --fog: #ecf0f1;
+      --plate: #f5f6f7;
+      --weld: #4E9A2A;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: var(--coal);
+      color: #e8e8e8;
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    .label-heading {
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+
+    /* === TABS === */
+    .tab-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.75rem 2rem;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+      color: var(--ash);
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab-btn:hover {
+      color: var(--fog);
+    }
+
+    .tab-btn.active {
+      color: var(--spark);
+      border-bottom-color: var(--spark);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* === INPUTS === */
+    .field-group {
+      margin-bottom: 1rem;
+    }
+
+    .field-label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      background: #242424;
+      border: 1px solid #3a3a3a;
+      color: #e8e8e8;
+      padding: 0.6rem 0.85rem;
+      border-radius: 6px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--spark);
+      box-shadow: 0 0 0 3px rgba(140, 198, 63, 0.15);
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    select option {
+      background: #242424;
+    }
+
+    /* === CARDS === */
+    .card {
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--fog);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title .icon {
+      color: var(--spark);
+      font-size: 1.1rem;
+    }
+
+    /* === BUTTONS === */
+    .btn-primary {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--spark);
+      color: #1a1a1a;
+      border: none;
+      padding: 0.7rem 1.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background: var(--ember);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--ash);
+      border: 1px solid #444;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ash);
+      color: var(--fog);
+    }
+
+    .btn-save {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--weld);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-save:hover {
+      opacity: 0.85;
+    }
+
+    /* === SUMMARY PANEL === */
+    .summary-panel {
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .summary-header {
+      background: linear-gradient(135deg, var(--iron), var(--steel));
+      padding: 1.25rem 1.5rem;
+    }
+
+    .summary-header h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .summary-body {
+      padding: 1.5rem;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #2e2e2e;
+      font-size: 0.9rem;
+    }
+
+    .breakdown-row:last-child {
+      border-bottom: none;
+    }
+
+    .breakdown-label {
+      color: var(--ash);
+      font-weight: 400;
+    }
+
+    .breakdown-value {
+      font-weight: 600;
+      color: var(--fog);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+    }
+
+    .breakdown-value.zero {
+      color: #555;
+    }
+
+    .total-row {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--spark);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .total-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      color: var(--fog);
+      letter-spacing: 0.05em;
+    }
+
+    .total-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--spark);
+    }
+
+    /* === CHECKBOX === */
+    .custom-check {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      padding: 0.6rem 0.85rem;
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 6px;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+
+    .custom-check:hover {
+      border-color: #555;
+    }
+
+    .custom-check input[type="checkbox"] {
+      display: none;
+    }
+
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #555;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      background: #2a2a2a;
+    }
+
+    .custom-check input:checked~.check-box {
+      background: var(--spark);
+      border-color: var(--spark);
+    }
+
+    .check-mark {
+      color: #1a1a1a;
+      font-size: 0.7rem;
+      font-weight: 900;
+      display: none;
+    }
+
+    .custom-check input:checked~.check-box .check-mark {
+      display: block;
+    }
+
+    .check-text {
+      font-size: 0.92rem;
+      color: #ccc;
+      font-weight: 500;
+    }
+
+    .check-price {
+      margin-left: auto;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ash);
+      font-weight: 600;
+    }
+
+    /* === BADGE / TAG === */
+    .badge {
+      display: inline-block;
+      background: rgba(140, 198, 63, 0.15);
+      color: var(--spark);
+      border: 1px solid rgba(140, 198, 63, 0.3);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* === CONFIG GRID === */
+    .config-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: #1f1f1f;
+      border: 1px solid #2e2e2e;
+      border-radius: 8px;
+      margin-bottom: 0.6rem;
+      transition: border-color 0.2s;
+    }
+
+    .config-item:hover {
+      border-color: #444;
+    }
+
+    .config-item-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--fog);
+    }
+
+    .config-item-sub {
+      font-size: 0.78rem;
+      color: var(--ash);
+      margin-top: 0.1rem;
+    }
+
+    .config-item input {
+      width: 120px;
+      text-align: right;
+    }
+
+    /* === TOAST === */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--weld);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* === AREA DISPLAY === */
+    .area-display {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+
+    .area-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--spark);
+      line-height: 1;
+    }
+
+    .area-unit {
+      font-size: 0.75rem;
+      color: var(--ash);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===========================
+     PRINT STYLES
+     =========================== */
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body {
+        background: #fff !important;
+        color: #1a1a1a !important;
+        font-family: 'Barlow', sans-serif;
+      }
+
+      #app-header,
+      #tab-bar,
+      #tab-config,
+      #sales-form-col,
+      .no-print {
+        display: none !important;
+      }
+
+      #tab-sales {
+        display: block !important;
+      }
+
+      #print-quote {
+        display: block !important;
+      }
+
+      #sales-layout {
+        display: block !important;
+      }
+
+      #print-quote {
+        width: 100% !important;
+        max-width: 680px !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+
+      /* --- Premium Header matching Logo --- */
+      .print-header {
+        background: #111111 !important;
+        color: #fff !important;
+        padding: 1.75rem 2rem !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        border-top: 5px solid #8CC63F !important;
+      }
+
+      #print-company-name {
+        color: #8CC63F !important;
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+        line-height: 1 !important;
+      }
+
+      #print-company-info {
+        color: rgba(255, 255, 255, 0.7) !important;
+        font-size: 0.72rem !important;
+        letter-spacing: 0.1em !important;
+        text-transform: uppercase !important;
+        margin-top: 0.35rem !important;
+      }
+
+      #print-contact-line {
+        color: rgba(255, 255, 255, 0.5) !important;
+        font-size: 0.72rem !important;
+        margin-top: 0.4rem !important;
+      }
+
+      #print-header-text {
+        color: #8CC63F !important;
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+      }
+
+      #print-date,
+      #print-folio {
+        color: rgba(255, 255, 255, 0.6) !important;
+        font-size: 0.8rem !important;
+        margin-top: 0.2rem !important;
+      }
+
+      .print-body {
+        padding: 1.75rem 2rem !important;
+      }
+
+      .print-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: baseline !important;
+        padding: 0.65rem 0.5rem !important;
+        border-bottom: 1px solid #eeeeee !important;
+        font-size: 0.95rem !important;
+      }
+
+      .print-row:nth-child(even) {
+        background: #fcfcfc !important;
+      }
+
+      .print-total-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: baseline !important;
+        padding: 1.25rem 0.5rem 0 !important;
+        border-top: 3px solid #8CC63F !important;
+        margin-top: 0.75rem !important;
+      }
+
+      .print-total-label {
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        color: #111111 !important;
+        letter-spacing: 0.05em !important;
+      }
+
+      .print-total-val {
+        font-family: 'Barlow Condensed', sans-serif !important;
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        color: #8CC63F !important;
+      }
+
+      .print-footer {
+        margin-top: 2.5rem !important;
+        padding: 1.25rem 2rem !important;
+        background: #111111 !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        font-size: 0.75rem !important;
+        text-align: center !important;
+        line-height: 1.6 !important;
+      }
+
+      .print-footer strong {
+        color: #8CC63F !important;
+      }
+    }
+
+    /* Sidebar scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 3px;
+    }
+
+    /* Animate-in */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-up {
+      animation: fadeUp 0.35s ease forwards;
+    }
+
+    /* Responsive helpers */
+    @media (max-width: 768px) {
+      .summary-panel {
+        position: static;
+        margin-top: 1.5rem;
+      }
+    }
+
+    /* === LUCIDE ICONS === */
+    i[data-lucide] {
+      display: inline-flex;
+      vertical-align: middle;
+    }
+
+    .card-title i[data-lucide] svg,
+    .card-title .icon i[data-lucide] svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tab-btn i[data-lucide] svg {
+      width: 17px;
+      height: 17px;
+      margin-right: 5px;
+    }
+
+    .btn-primary i[data-lucide] svg,
+    .btn-secondary i[data-lucide] svg,
+    .btn-save i[data-lucide] svg {
+      width: 15px;
+      height: 15px;
+      margin-right: 5px;
+    }
+
+    #app-header i[data-lucide] svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Icon + text inline alignment fix */
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-save {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .card-title {
+      display: flex !important;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+    }
+
+    .card-title .icon {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================================
+     APP HEADER
+     ============================================================ -->
+  <header id="app-header" class="no-print" style="background: #111; border-bottom: 1px solid #2a2a2a;">
+    <div
+      style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 60px;">
+      <div style="display:flex; align-items:center; gap: 0.75rem;">
+        <div
+          style="width:36px; height:36px; background:var(--spark); border-radius:6px; display:flex; align-items:center; justify-content:center;">
+          <i data-lucide="settings-2"></i>
+        </div>
+        <div>
+          <h1
+            style="font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#fff; line-height:1;">
+            Plasmarq</h1>
+          <p
+            style="font-size:0.65rem; color:var(--ash); letter-spacing:0.12em; text-transform:uppercase; line-height:1; margin-top:2px;">
+            Sistema de Cotización</p>
+        </div>
+      </div>
+      <span class="badge">v2.0</span>
+    </div>
+  </header>
+
+  <!-- ============================================================
+     TAB BAR
+     ============================================================ -->
+  <div id="tab-bar" class="no-print"
+    style="background:#111; border-bottom: 1px solid #2a2a2a; position: sticky; top:0; z-index:50;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 1.5rem; display:flex; gap:0.25rem;">
+      <button class="tab-btn active" onclick="switchTab('sales')" id="btn-sales">
+        <i data-lucide="receipt"></i> Ventas / Cotizador
+      </button>
+      <button class="tab-btn" onclick="switchTab('config')" id="btn-config">
+        <i data-lucide="settings"></i> Configuración
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+  <main style="max-width:1200px; margin:0 auto; padding:1.5rem;">
+
+    <!-- =========================================================
+       TAB: VENTAS
+       ========================================================= -->
+    <div id="tab-sales" class="tab-panel active fade-up">
+      <div id="sales-layout" style="display:grid; grid-template-columns: 1fr 400px; gap:1.5rem; align-items: start;">
+
+        <!-- LEFT: FORM -->
+        <div id="sales-form-col" class="no-print">
+
+          <!-- Client Info -->
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title"><span class="icon"><i data-lucide="user"></i></span> Datos del Cliente</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+              <div class="field-group" style="margin:0;">
+                <label class="field-label">Nombre del Cliente</label>
+                <input type="text" id="client-name" placeholder="Ej: Juan Pérez" oninput="updateQuote()">
+              </div>
+              <div class="field-group" style="margin:0;">
+                <label class="field-label">Teléfono</label>
+                <input type="tel" id="client-phone" placeholder="Ej: 961 123 4567" oninput="updateQuote()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Piece Config -->
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title"><span class="icon"><i data-lucide="sliders-horizontal"></i></span> Configuración de
+              la Pieza</div>
+
+            <div class="field-group">
+              <label class="field-label">Tipo de Estructura</label>
+              <select id="structure-type" onchange="updateQuote()">
+                <option value="">— Selecciona —</option>
+              </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; align-items:end;">
+              <div class="field-group" style="margin:0;">
+                <label class="field-label">Alto (metros)</label>
+                <input type="number" id="height" placeholder="0.00" min="0" step="0.01" oninput="updateQuote()">
+              </div>
+              <div class="field-group" style="margin:0;">
+                <label class="field-label">Ancho (metros)</label>
+                <input type="number" id="width" placeholder="0.00" min="0" step="0.01" oninput="updateQuote()">
+              </div>
+              <div class="area-display">
+                <div class="area-val" id="area-display">0.00</div>
+                <div class="area-unit">m² de área</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Extras -->
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title"><span class="icon"><i data-lucide="paintbrush"></i></span> Acabados y Adicionales
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Tipo de Pintura</label>
+              <select id="paint-type" onchange="updateQuote()">
+                <option value="none">Sin pintura</option>
+              </select>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+              <label class="custom-check">
+                <input type="checkbox" id="check-frame" onchange="updateQuote()">
+                <div class="check-box"><span class="check-mark">✓</span></div>
+                <span class="check-text">Marco / Bastidor Reforzado</span>
+                <span class="check-price" id="price-frame-label">$0.00</span>
+              </label>
+              <label class="custom-check">
+                <input type="checkbox" id="check-install" onchange="updateQuote()">
+                <div class="check-box"><span class="check-mark">✓</span></div>
+                <span class="check-text">Instalación en sitio</span>
+                <span class="check-price" id="price-install-label">$0.00</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="card">
+            <div class="card-title"><span class="icon"><i data-lucide="notebook-pen"></i></span> Notas Adicionales</div>
+            <textarea id="quote-notes" rows="3" oninput="updateQuote()"
+              placeholder="Observaciones, medidas especiales, condiciones de entrega..."
+              style="width:100%; background:#1f1f1f; border:1px solid #333; color:#e8e8e8; padding:0.65rem 0.9rem; border-radius:6px; font-family:'Barlow',sans-serif; font-size:0.9rem; resize:vertical; outline:none;"></textarea>
+          </div>
+        </div>
+
+        <!-- RIGHT: SUMMARY + PRINT -->
+        <div>
+
+          <!-- SCREEN SUMMARY -->
+          <div class="summary-panel no-print" style="margin-bottom:1rem;">
+            <div class="summary-header">
+              <h2>Resumen de Cotización</h2>
+              <p
+                style="font-size:0.8rem; color:rgba(255,255,255,0.6); margin-top:0.2rem; font-family:'Barlow',sans-serif;">
+                Cálculo en tiempo real</p>
+            </div>
+            <div class="summary-body">
+
+              <div class="breakdown-row">
+                <span class="breakdown-label">Material base</span>
+                <span class="breakdown-value" id="sum-material">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Pintura</span>
+                <span class="breakdown-value" id="sum-paint">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Bastidor reforzado</span>
+                <span class="breakdown-value" id="sum-frame">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Instalación</span>
+                <span class="breakdown-value" id="sum-install">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Subtotal (costo)</span>
+                <span class="breakdown-value" id="sum-subtotal">$0.00</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label" id="sum-margin-label">Margen (0%)</span>
+                <span class="breakdown-value" id="sum-margin-val">$0.00</span>
+              </div>
+
+              <div class="total-row">
+                <span class="total-label">Total</span>
+                <span class="total-value" id="sum-total">$0.00</span>
+              </div>
+
+              <div
+                style="margin-top:1.25rem; font-size:0.75rem; color:#555; border-top:1px solid #2a2a2a; padding-top:0.85rem; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.03em; text-transform:uppercase;">
+                Fórmula: Material × (1 + %Margen) + Pintura + Bastidor + Instalación
+              </div>
+            </div>
+          </div>
+
+          <!-- PRINT BUTTON -->
+          <button class="btn-primary no-print" style="width:100%; font-size:1.05rem; padding:0.85rem;"
+            onclick="printQuote()">
+            <i data-lucide="printer"></i> Imprimir / Guardar PDF
+          </button>
+
+          <!-- New Quote button -->
+          <button class="btn-secondary no-print" style="width:100%; margin-top:0.6rem;" onclick="resetSalesForm()">
+            <i data-lucide="plus-circle"></i> Nueva Cotización
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+         PRINT-ONLY QUOTE SHEET
+         ============================================================ -->
+      <div id="print-quote" style="display:none;">
+        <div class="print-header">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <img id="print-logo" src="" alt="Logo" style="max-height:50px; display:none;">
+            <div>
+              <div id="print-company-name"
+                style="font-family:'Barlow Condensed',sans-serif; font-size:1.8rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#fff; line-height:1;">
+                Plasmarq</div>
+              <div id="print-company-info"
+                style="font-size:0.75rem; color:rgba(255,255,255,0.6); letter-spacing:0.12em; text-transform:uppercase; margin-top:0.25rem;">
+                Herrería &amp; Cerrajería Metálica</div>
+              <div id="print-contact-line"
+                style="font-size:0.75rem; color:rgba(255,255,255,0.55); margin-top:0.3rem; display:none;"></div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div id="print-header-text"
+              style="font-family:'Barlow Condensed',sans-serif; font-size:1.2rem; font-weight:700; color:#8CC63F; text-transform:uppercase;">
+              Cotización</div>
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.7);" id="print-date"></div>
+            <div style="font-size:0.8rem; color:rgba(255,255,255,0.7);" id="print-folio"></div>
+          </div>
+        </div>
+
+        <div class="print-body" style="padding:1.5rem 2rem; background:#fff;">
+
+          <!-- Client block -->
+          <div
+            style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #eee;">
+            <div>
+              <div
+                style="font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#999; margin-bottom:0.2rem;">
+                Cliente</div>
+              <div style="font-size:1.1rem; font-weight:600; color:#1a1a1a;" id="print-client-name">—</div>
+            </div>
+            <div>
+              <div
+                style="font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#999; margin-bottom:0.2rem;">
+                Teléfono</div>
+              <div style="font-size:1.1rem; font-weight:600; color:#1a1a1a;" id="print-client-phone">—</div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div
+            style="margin-bottom:1.5rem; padding:1rem; background:#f8f8f8; border-radius:8px; border-left:4px solid #8CC63F;">
+            <div
+              style="font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#999; margin-bottom:0.4rem;">
+              Descripción del Producto</div>
+            <div style="font-size:1rem; font-weight:600; color:#1a1a1a;" id="print-structure">—</div>
+            <div style="font-size:0.85rem; color:#666; margin-top:0.25rem;" id="print-dimensions">—</div>
+          </div>
+
+          <!-- Breakdown table -->
+          <div style="margin-bottom:1rem;">
+            <div
+              style="font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:#999; margin-bottom:0.75rem; font-weight:700;">
+              Desglose de Costos</div>
+            <div id="print-breakdown"></div>
+
+            <div class="print-total-row">
+              <span class="print-total-label">Total a Pagar</span>
+              <span class="print-total-val" id="print-total">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div id="print-notes-block"
+            style="margin-top:1.5rem; padding:0.75rem 1rem; background:#fff8ee; border-radius:6px; border:1px solid #f0e0c0; display:none;">
+            <div
+              style="font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#c0862a; margin-bottom:0.3rem; font-weight:700;">
+              Notas</div>
+            <div style="font-size:0.85rem; color:#5a4a2a;" id="print-notes-text"></div>
+          </div>
+        </div>
+
+        <div class="print-footer" id="print-footer-block">
+          <div id="print-footer-lines">Esta cotización tiene una vigencia de <strong>15 días</strong> a partir de la
+            fecha de emisión.<br>Precios incluyen materiales y mano de obra especificados. I.V.A. no incluido.</div>
+        </div>
+      </div>
+
+    </div><!-- end #tab-sales -->
+
+
+    <!-- =========================================================
+       TAB: CONFIGURACIÓN
+       ========================================================= -->
+    <div id="tab-config" class="tab-panel fade-up">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+        <!-- LEFT: Materials & Paint -->
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+          <!-- Materiales Base -->
+          <div class="card">
+            <div class="card-title"><span class="icon"><i data-lucide="layers"></i></span> Materiales Base ($/m²)</div>
+            <div id="materials-config"></div>
+            <button class="btn-secondary" style="width:100%; margin-top:0.75rem;" onclick="addMaterial()">+ Agregar
+              Material</button>
+          </div>
+
+          <!-- Pintura -->
+          <div class="card">
+            <div class="card-title"><span class="icon"><i data-lucide="paint-bucket"></i></span> Acabados de Pintura
+              ($/m²)</div>
+            <div id="paint-config"></div>
+            <button class="btn-secondary" style="width:100%; margin-top:0.75rem;" onclick="addPaintType()">+ Agregar
+              Acabado</button>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Aditamentos & Margen -->
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+          <!-- Aditamentos -->
+          <div class="card">
+            <div class="card-title"><span class="icon"><i data-lucide="wrench"></i></span> Aditamentos (Costo Fijo)
+            </div>
+            <div id="addons-config"></div>
+            <button class="btn-secondary" style="width:100%; margin-top:0.75rem;" onclick="addAddonType()">+ Agregar
+              Aditamento</button>
+          </div>
+
+          <!-- Margen -->
+          <div class="card">
+            <div class="card-title"><span class="icon"><i data-lucide="trending-up"></i></span> Margen de Ganancia</div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+              <div style="flex:1;">
+                <label class="field-label">Porcentaje de Ganancia (%)</label>
+                <input type="number" id="cfg-margin" min="0" max="100" step="0.5"
+                  oninput="autoSaveConfig(); updateQuote()">
+              </div>
+              <div style="text-align:center; padding:1rem; background:#1a1a1a; border-radius:8px; min-width:90px;">
+                <div class="area-val" id="margin-preview" style="font-size:1.6rem;">0%</div>
+                <div class="area-unit">margen</div>
+              </div>
+            </div>
+            <div
+              style="margin-top:0.75rem; padding:0.75rem; background:#1f1f1f; border-radius:6px; border:1px solid #2e2e2e; font-size:0.8rem; color:var(--ash); line-height:1.6;">
+              Este porcentaje se aplica sobre el costo del material base para calcular su precio de venta.
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="card" style="background:#1d1a14; border-color:#3d3020;">
+            <div class="card-title" style="color:var(--ember);"><span class="icon" style="color:var(--ember);"><i
+                  data-lucide="alert-triangle"></i></span> Acciones de Configuración</div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+              <button class="btn-save" onclick="saveConfig()"><i data-lucide="save"></i> Guardar Configuración</button>
+              <button class="btn-secondary" onclick="resetDefaults()" style="border-color:#5a3a2a; color:#c87a4a;"><i
+                  data-lucide="rotate-ccw"></i> Restablecer Defaults</button>
+            </div>
+            <div
+              style="margin-top:0.75rem; font-size:0.78rem; color:#5a4a3a; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.03em; text-transform:uppercase;">
+              Los cambios se guardan automáticamente en el navegador (LocalStorage)
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PDF Configuration Section -->
+      <div style="display:grid; grid-template-columns:1fr; gap:1.5rem; margin-top:1.5rem;">
+        <!-- PDF Configuration -->
+        <div class="card">
+          <div class="card-title"><span class="icon"><i data-lucide="file-text"></i></span> Configuración del PDF</div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+            <!-- Logo URL -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">URL del Logo</label>
+              <input type="text" id="pdf-logo-url" placeholder="https://ejemplo.com/logo.png"
+                oninput="autoSaveConfig()">
+              <div style="margin-top:0.35rem; font-size:0.75rem; color:var(--ash);">Deja vacío para no mostrar logo
+              </div>
+            </div>
+
+            <!-- Nombre de Empresa -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Nombre de la Empresa</label>
+              <input type="text" id="pdf-company-name" placeholder="Plasmarq" oninput="autoSaveConfig()">
+            </div>
+
+            <!-- Subtítulo/Info -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Subtítulo de Empresa</label>
+              <input type="text" id="pdf-company-info" placeholder="Herrería & Cerrajería Metálica"
+                oninput="autoSaveConfig()">
+            </div>
+
+            <!-- Teléfono -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Teléfono</label>
+              <input type="text" id="pdf-phone" placeholder="Ej: +1 (555) 123-4567" oninput="autoSaveConfig()">
+            </div>
+
+            <!-- Email -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Email</label>
+              <input type="text" id="pdf-email" placeholder="info@empresa.com" oninput="autoSaveConfig()">
+            </div>
+
+            <!-- Dirección -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Dirección</label>
+              <input type="text" id="pdf-address" placeholder="Calle 123, Ciudad" oninput="autoSaveConfig()">
+            </div>
+
+            <!-- Texto de Cabecera -->
+            <div class="field-group" style="margin:0;">
+              <label class="field-label">Texto del Encabezado</label>
+              <input type="text" id="pdf-header-text" placeholder="Cotización" oninput="autoSaveConfig()">
+            </div>
+          </div>
+
+          <!-- Pie de Página -->
+          <div class="field-group" style="margin-bottom:1rem;">
+            <label class="field-label">Pie de Página (Footer)</label>
+            <textarea id="pdf-footer-text" rows="2" oninput="autoSaveConfig()"
+              placeholder="Esta cotización tiene vigencia de 15 días..."
+              style="width:100%; background:#1f1f1f; border:1px solid #333; color:#e8e8e8; padding:0.65rem 0.9rem; border-radius:6px; font-family:'Barlow',sans-serif; font-size:0.9rem; resize:vertical; outline:none;"></textarea>
+            <div style="font-size:0.75rem; color:var(--ash); margin-top:0.35rem;">Nota: Usa saltos de línea para
+              múltiples líneas</div>
+          </div>
+
+          <!-- Notas Adicionales para PDF -->
+          <div class="field-group" style="margin:0;">
+            <label class="field-label">Nota Adicional en PDF (Opcional)</label>
+            <textarea id="pdf-notes" rows="2" oninput="autoSaveConfig()"
+              placeholder="Información adicional a mostrar en el PDF..."
+              style="width:100%; background:#1f1f1f; border:1px solid #333; color:#e8e8e8; padding:0.65rem 0.9rem; border-radius:6px; font-family:'Barlow',sans-serif; font-size:0.9rem; resize:vertical; outline:none;"></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end #tab-config -->
+
+  </main>
+
+  <!-- TOAST -->
+  <div id="toast">Configuración guardada</div>
+
+  <!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+  <script>
+    /* =====================================================
+       DEFAULT CONFIG
+       ===================================================== */
+    const DEFAULT_CONFIG = {
+      materials: [
+        { id: 'celosia', name: 'Celosías Metálicas', sub: 'Mallas y enrejados decorativos', cost: 850 },
+        { id: 'porton', name: 'Portones / Puertas', sub: 'Puertas corredizas y batientes', cost: 1200 },
+        { id: 'reja', name: 'Rejas Simples', sub: 'Protección residencial básica', cost: 650 },
+        { id: 'barandal', name: 'Barandales', sub: 'Escaleras y terrazas', cost: 950 },
+        { id: 'cancela', name: 'Cancelería Metálica', sub: 'Divisiones y frentes de local', cost: 1100 },
+      ],
+      paints: [
+        { id: 'primer', name: 'Primer Anticorrosivo', sub: 'Tratamiento base metálico', cost: 120 },
+        { id: 'auto', name: 'Pintura Automotriz', sub: 'Esmalte de alto brillo', cost: 280 },
+        { id: 'electro', name: 'Pintura Electrostática', sub: 'Acabado premium en polvo', cost: 420 },
+      ],
+      addons: [
+        { id: 'frame', name: 'Marco / Bastidor Reforzado', sub: 'Costo fijo por unidad', cost: 450 },
+        { id: 'install', name: 'Instalación en Sitio', sub: 'Mano de obra e instalación', cost: 600 },
+      ],
+      margin: 30,
+      // PDF Configuration
+      pdf_logo_url: '',
+      pdf_company_name: 'Plasmarq',
+      pdf_company_info: 'Herrería & Cerrajería Metálica',
+      pdf_phone: '',
+      pdf_address: '',
+      pdf_email: '',
+      pdf_header_text: 'Cotización',
+      pdf_footer_text: 'Esta cotización tiene una vigencia de 15 días a partir de la fecha de emisión.\nPrecios incluyen materiales y mano de obra especificados. I.V.A. no incluido.',
+      pdf_notes: '',
+    };
+
+    /* =====================================================
+       LOAD / SAVE CONFIG
+       ===================================================== */
+    function loadConfig() {
+      try {
+        const saved = localStorage.getItem('plasmarq_config');
+        if (saved) return JSON.parse(saved);
+      } catch (e) { }
+      return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    }
+
+    function saveConfig() {
+      const cfg = readConfigFromUI();
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      showToast('Configuración guardada');
+      refreshStructureSelect();
+      refreshPaintSelect();
+      updatePriceLabels();
+      updateQuote();
+    }
+
+    function autoSaveConfig() {
+      const cfg = readConfigFromUI();
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      // Update margin preview
+      const margin = parseFloat(document.getElementById('cfg-margin').value) || 0;
+      document.getElementById('margin-preview').textContent = margin + '%';
+      updateQuote();
+    }
+
+    function readConfigFromUI() {
+      const cfg = loadConfig();
+
+      // materials
+      cfg.materials.forEach(m => {
+        const el = document.getElementById('mat-' + m.id);
+        if (el) m.cost = parseFloat(el.value) || 0;
+      });
+
+      // paints
+      cfg.paints.forEach(p => {
+        const el = document.getElementById('paint-' + p.id);
+        if (el) p.cost = parseFloat(el.value) || 0;
+      });
+
+      // addons
+      cfg.addons.forEach(a => {
+        const el = document.getElementById('addon-' + a.id);
+        if (el) a.cost = parseFloat(el.value) || 0;
+      });
+
+      cfg.margin = parseFloat(document.getElementById('cfg-margin').value) || 0;
+
+      // PDF Configuration
+      const logoEl = document.getElementById('pdf-logo-url');
+      const companyEl = document.getElementById('pdf-company-name');
+      const infoEl = document.getElementById('pdf-company-info');
+      const phoneEl = document.getElementById('pdf-phone');
+      const addressEl = document.getElementById('pdf-address');
+      const emailEl = document.getElementById('pdf-email');
+      const headerEl = document.getElementById('pdf-header-text');
+      const footerEl = document.getElementById('pdf-footer-text');
+      const notesEl = document.getElementById('pdf-notes');
+
+      if (logoEl) cfg.pdf_logo_url = logoEl.value;
+      if (companyEl) cfg.pdf_company_name = companyEl.value;
+      if (infoEl) cfg.pdf_company_info = infoEl.value;
+      if (phoneEl) cfg.pdf_phone = phoneEl.value;
+      if (addressEl) cfg.pdf_address = addressEl.value;
+      if (emailEl) cfg.pdf_email = emailEl.value;
+      if (headerEl) cfg.pdf_header_text = headerEl.value;
+      if (footerEl) cfg.pdf_footer_text = footerEl.value;
+      if (notesEl) cfg.pdf_notes = notesEl.value;
+
+      return cfg;
+    }
+
+    function resetDefaults() {
+      if (!confirm('¿Restablecer todos los valores a los predeterminados?')) return;
+      localStorage.removeItem('plasmarq_config');
+      renderConfigUI(JSON.parse(JSON.stringify(DEFAULT_CONFIG)));
+      refreshStructureSelect();
+      refreshPaintSelect();
+      updatePriceLabels();
+      updateQuote();
+      showToast('Valores restablecidos');
+    }
+
+    /* =====================================================
+       RENDER CONFIG UI
+       ===================================================== */
+    function renderConfigUI(cfg) {
+      // Materials
+      const matContainer = document.getElementById('materials-config');
+      matContainer.innerHTML = '';
+      cfg.materials.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'config-item';
+        div.innerHTML = `
+      <div>
+        <div class="config-item-name">${m.name}</div>
+        <div class="config-item-sub">${m.sub}</div>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <input type="number" id="mat-${m.id}" value="${m.cost}" min="0" step="0.01" oninput="autoSaveConfig()">
+        <button class="btn-secondary" style="padding:0.4rem 0.6rem; font-size:0.75rem;" onclick="removeMaterial('${m.id}')">✕</button>
+      </div>
+    `;
+        matContainer.appendChild(div);
+      });
+
+      // Paints
+      const paintContainer = document.getElementById('paint-config');
+      paintContainer.innerHTML = '';
+      cfg.paints.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'config-item';
+        div.innerHTML = `
+      <div>
+        <div class="config-item-name">${p.name}</div>
+        <div class="config-item-sub">${p.sub}</div>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <input type="number" id="paint-${p.id}" value="${p.cost}" min="0" step="0.01" oninput="autoSaveConfig()">
+        <button class="btn-secondary" style="padding:0.4rem 0.6rem; font-size:0.75rem;" onclick="removePaint('${p.id}')">✕</button>
+      </div>
+    `;
+        paintContainer.appendChild(div);
+      });
+
+      // Addons
+      const addonContainer = document.getElementById('addons-config');
+      addonContainer.innerHTML = '';
+      cfg.addons.forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'config-item';
+        div.innerHTML = `
+      <div>
+        <div class="config-item-name">${a.name}</div>
+        <div class="config-item-sub">${a.sub}</div>
+      </div>
+      <div style="display:flex; gap:0.5rem; align-items:center;">
+        <input type="number" id="addon-${a.id}" value="${a.cost}" min="0" step="0.01" oninput="autoSaveConfig(); updatePriceLabels()">
+        <button class="btn-secondary" style="padding:0.4rem 0.6rem; font-size:0.75rem;" onclick="removeAddon('${a.id}')">✕</button>
+      </div>
+    `;
+        addonContainer.appendChild(div);
+      });
+
+      // Margin
+      document.getElementById('cfg-margin').value = cfg.margin;
+      document.getElementById('margin-preview').textContent = cfg.margin + '%';
+
+      // PDF Configuration
+      if (document.getElementById('pdf-logo-url')) document.getElementById('pdf-logo-url').value = cfg.pdf_logo_url || '';
+      if (document.getElementById('pdf-company-name')) document.getElementById('pdf-company-name').value = cfg.pdf_company_name || '';
+      if (document.getElementById('pdf-company-info')) document.getElementById('pdf-company-info').value = cfg.pdf_company_info || '';
+      if (document.getElementById('pdf-phone')) document.getElementById('pdf-phone').value = cfg.pdf_phone || '';
+      if (document.getElementById('pdf-address')) document.getElementById('pdf-address').value = cfg.pdf_address || '';
+      if (document.getElementById('pdf-email')) document.getElementById('pdf-email').value = cfg.pdf_email || '';
+      if (document.getElementById('pdf-header-text')) document.getElementById('pdf-header-text').value = cfg.pdf_header_text || '';
+      if (document.getElementById('pdf-footer-text')) document.getElementById('pdf-footer-text').value = cfg.pdf_footer_text || '';
+      if (document.getElementById('pdf-notes')) document.getElementById('pdf-notes').value = cfg.pdf_notes || '';
+    }
+
+    function refreshStructureSelect() {
+      const cfg = loadConfig();
+      const sel = document.getElementById('structure-type');
+      const current = sel.value;
+      sel.innerHTML = '<option value="">— Selecciona estructura —</option>';
+      cfg.materials.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.name;
+        sel.appendChild(opt);
+      });
+      if (current) sel.value = current;
+    }
+
+    function refreshPaintSelect() {
+      const cfg = loadConfig();
+      const sel = document.getElementById('paint-type');
+      const current = sel.value;
+      sel.innerHTML = '<option value="none">Sin pintura</option>';
+      cfg.paints.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        sel.appendChild(opt);
+      });
+      if (current && current !== 'none') sel.value = current;
+    }
+
+    function removeMaterial(id) {
+      if (!confirm('¿Eliminar este material?')) return;
+      const cfg = loadConfig();
+      cfg.materials = cfg.materials.filter(m => m.id !== id);
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      refreshStructureSelect();
+      updateQuote();
+      showToast('Material eliminado');
+    }
+
+    function removePaint(id) {
+      if (!confirm('¿Eliminar este acabado?')) return;
+      const cfg = loadConfig();
+      cfg.paints = cfg.paints.filter(p => p.id !== id);
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      refreshPaintSelect();
+      updateQuote();
+      showToast('Acabado eliminado');
+    }
+
+    function removeAddon(id) {
+      if (!confirm('¿Eliminar este aditamento?')) return;
+      const cfg = loadConfig();
+      cfg.addons = cfg.addons.filter(a => a.id !== id);
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      updatePriceLabels();
+      updateQuote();
+      showToast('Aditamento eliminado');
+    }
+
+    function addMaterial() {
+      const name = prompt('Nombre del material:');
+      if (!name) return;
+      const sub = prompt('Descripción breve:');
+      if (sub === null) return;
+      const cost = parseFloat(prompt('Costo por m²:') || '0');
+
+      const cfg = loadConfig();
+      const id = 'mat_' + Date.now();
+      cfg.materials.push({ id, name, sub, cost });
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      refreshStructureSelect();
+      updateQuote();
+      showToast('Material agregado');
+    }
+
+    function addPaintType() {
+      const name = prompt('Nombre del acabado:');
+      if (!name) return;
+      const sub = prompt('Descripción breve:');
+      if (sub === null) return;
+      const cost = parseFloat(prompt('Costo por m²:') || '0');
+
+      const cfg = loadConfig();
+      const id = 'paint_' + Date.now();
+      cfg.paints.push({ id, name, sub, cost });
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      refreshPaintSelect();
+      updateQuote();
+      showToast('Acabado agregado');
+    }
+
+    function addAddonType() {
+      const name = prompt('Nombre del aditamento:');
+      if (!name) return;
+      const sub = prompt('Descripción breve:');
+      if (sub === null) return;
+      const cost = parseFloat(prompt('Costo fijo:') || '0');
+
+      const cfg = loadConfig();
+      const id = 'addon_' + Date.now();
+      cfg.addons.push({ id, name, sub, cost });
+      localStorage.setItem('plasmarq_config', JSON.stringify(cfg));
+      renderConfigUI(cfg);
+      updatePriceLabels();
+      updateQuote();
+      showToast('Aditamento agregado');
+    }
+
+    function updatePriceLabels() {
+      const cfg = loadConfig();
+      const frameAddon = cfg.addons.find(a => a.id === 'frame');
+      const installAddon = cfg.addons.find(a => a.id === 'install');
+      document.getElementById('price-frame-label').textContent = frameAddon ? fmt(frameAddon.cost) : '$0.00';
+      document.getElementById('price-install-label').textContent = installAddon ? fmt(installAddon.cost) : '$0.00';
+    }
+
+    /* =====================================================
+       QUOTE CALCULATION
+       ===================================================== */
+    function updateQuote() {
+      const cfg = loadConfig();
+      const h = parseFloat(document.getElementById('height').value) || 0;
+      const w = parseFloat(document.getElementById('width').value) || 0;
+      const area = h * w;
+      document.getElementById('area-display').textContent = area.toFixed(2);
+
+      // Material base
+      const structureId = document.getElementById('structure-type').value;
+      let matCost = 0;
+      if (structureId) {
+        const mat = cfg.materials.find(m => m.id === structureId);
+        if (mat) matCost = mat.cost;
+      }
+      const costMaterial = area * matCost;
+
+      // Paint
+      const paintId = document.getElementById('paint-type').value;
+      let paintCostM2 = 0;
+      if (paintId && paintId !== 'none') {
+        const paint = cfg.paints.find(p => p.id === paintId);
+        if (paint) paintCostM2 = paint.cost;
+      }
+      const costPaint = area * paintCostM2;
+
+      // Fixed addons
+      const useFrame = document.getElementById('check-frame').checked;
+      const useInstall = document.getElementById('check-install').checked;
+      let costFrame = 0;
+      let costInstall = 0;
+      if (useFrame) {
+        const frameAddon = cfg.addons.find(a => a.id === 'frame');
+        if (frameAddon) costFrame = frameAddon.cost;
+      }
+      if (useInstall) {
+        const installAddon = cfg.addons.find(a => a.id === 'install');
+        if (installAddon) costInstall = installAddon.cost;
+      }
+
+      // Subtotal & total — margen aplicado solo al material base
+      const subtotal = costMaterial + costPaint + costFrame + costInstall;
+      const margin = cfg.margin / 100;
+      const marginAmt = costMaterial * margin;
+      const total = costMaterial * (1 + margin) + costPaint + costFrame + costInstall;
+
+      // Update UI
+      document.getElementById('sum-material').textContent = fmt(costMaterial);
+      document.getElementById('sum-paint').textContent = fmt(costPaint);
+      document.getElementById('sum-frame').textContent = fmt(costFrame);
+      document.getElementById('sum-install').textContent = fmt(costInstall);
+      document.getElementById('sum-subtotal').textContent = fmt(subtotal);
+      document.getElementById('sum-margin-label').textContent = `Margen (${cfg.margin}%)`;
+      document.getElementById('sum-margin-val').textContent = fmt(marginAmt);
+      document.getElementById('sum-total').textContent = fmt(total);
+
+      // Style zeros
+      ['sum-material', 'sum-paint', 'sum-frame', 'sum-install'].forEach(id => {
+        const el = document.getElementById(id);
+        const val = parseFloat(el.textContent.replace(/[^0-9.]/g, ''));
+        el.classList.toggle('zero', val === 0);
+      });
+    }
+
+    /* =====================================================
+       PRINT
+       ===================================================== */
+    function printQuote() {
+      const cfg = loadConfig();
+
+      // ── PDF Configuration values ──────────────────────────────
+      const pdfCompanyName = cfg.pdf_company_name || 'Plasmarq';
+      const pdfCompanyInfo = cfg.pdf_company_info || '';
+      const pdfPhone = cfg.pdf_phone || '';
+      const pdfEmail = cfg.pdf_email || '';
+      const pdfAddress = cfg.pdf_address || '';
+      const pdfHeaderText = cfg.pdf_header_text || 'Cotización';
+      const pdfFooterText = cfg.pdf_footer_text || '';
+      const pdfLogoUrl = cfg.pdf_logo_url || '';
+      const pdfExtraNotes = cfg.pdf_notes || '';
+
+      // Inject company branding into print header
+      document.getElementById('print-company-name').textContent = pdfCompanyName;
+      document.getElementById('print-company-info').textContent = pdfCompanyInfo;
+      document.getElementById('print-header-text').textContent = pdfHeaderText;
+
+      // Contact line (phone / email / address)
+      const contactParts = [pdfPhone, pdfEmail, pdfAddress].filter(Boolean);
+      const contactLine = document.getElementById('print-contact-line');
+      if (contactParts.length) {
+        contactLine.textContent = contactParts.join('  ·  ');
+        contactLine.style.display = 'block';
+      } else {
+        contactLine.style.display = 'none';
+      }
+
+      // Logo
+      const logoEl = document.getElementById('print-logo');
+      if (pdfLogoUrl) {
+        logoEl.src = pdfLogoUrl;
+        logoEl.style.display = 'block';
+      } else {
+        logoEl.style.display = 'none';
+      }
+
+      // Footer text (supports newlines)
+      const footerLinesEl = document.getElementById('print-footer-lines');
+      if (pdfFooterText) {
+        footerLinesEl.innerHTML = pdfFooterText.replace(/\n/g, '<br>');
+      } else {
+        footerLinesEl.innerHTML = 'Esta cotización tiene una vigencia de <strong>15 días</strong> a partir de la fecha de emisión.<br>Precios incluyen materiales y mano de obra especificados. I.V.A. no incluido.';
+      }
+
+      // ── Client & product data ─────────────────────────────────
+      const clientName = document.getElementById('client-name').value || '—';
+      const clientPhone = document.getElementById('client-phone').value || '—';
+      const structureId = document.getElementById('structure-type').value;
+      const mat = structureId ? cfg.materials.find(m => m.id === structureId) : null;
+      const structureName = mat ? mat.name : '—';
+
+      const h = parseFloat(document.getElementById('height').value) || 0;
+      const w = parseFloat(document.getElementById('width').value) || 0;
+      const area = h * w;
+      const paintId = document.getElementById('paint-type').value;
+      const paint = paintId && paintId !== 'none' ? cfg.paints.find(p => p.id === paintId) : null;
+      const paintLabel = paint ? paint.name : 'Sin pintura';
+      const useFrame = document.getElementById('check-frame').checked;
+      const useInstall = document.getElementById('check-install').checked;
+
+      // Compute values
+      let matCost = mat ? mat.cost : 0;
+      const costMaterial = area * matCost;
+      let paintCostM2 = paint ? paint.cost : 0;
+      const costPaint = area * paintCostM2;
+
+      const frameAddon = cfg.addons.find(a => a.id === 'frame');
+      const installAddon = cfg.addons.find(a => a.id === 'install');
+      const costFrame = useFrame && frameAddon ? frameAddon.cost : 0;
+      const costInstall = useInstall && installAddon ? installAddon.cost : 0;
+
+      const subtotal = costMaterial + costPaint + costFrame + costInstall;
+      const marginAmt = costMaterial * cfg.margin / 100;
+      const total = costMaterial * (1 + cfg.margin / 100) + costPaint + costFrame + costInstall;
+
+      // Date & folio
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+      const folio = 'PM-' + now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+
+      document.getElementById('print-date').textContent = dateStr;
+      document.getElementById('print-folio').textContent = folio;
+      document.getElementById('print-client-name').textContent = clientName;
+      document.getElementById('print-client-phone').textContent = clientPhone;
+      document.getElementById('print-structure').textContent = structureName;
+      document.getElementById('print-dimensions').textContent = area > 0
+        ? `Alto: ${h} m × Ancho: ${w} m = ${area.toFixed(2)} m² · Pintura: ${paintLabel}`
+        : 'Dimensiones no especificadas';
+      document.getElementById('print-total').textContent = fmt(total);
+
+      // Breakdown rows - simplified concept and price only, no detailed breakdown math here
+      const rows = [
+        { label: 'Material base', val: costMaterial },
+      ];
+      if (paintId && paintId !== 'none') {
+        rows.push({ label: `Pintura: ${paintLabel}`, val: costPaint });
+      }
+      if (useFrame && frameAddon) rows.push({ label: frameAddon.name, val: costFrame });
+      if (useInstall && installAddon) rows.push({ label: installAddon.name, val: costInstall });
+      // Subtotal y margen internos - no se muestran al cliente
+
+
+      const bd = document.getElementById('print-breakdown');
+      bd.innerHTML = rows.map(r => `
+    <div class="print-row" style="${r.bold ? 'font-weight:700; background:#f8f8f8; padding:0.6rem 0.5rem; border-radius:4px;' : ''}">
+      <span style="color:#555;">${r.label}</span>
+      <span style="color:${r.val === 0 ? '#bbb' : '#1a1a1a'}; font-family:'Barlow Condensed',sans-serif; font-size:1rem; font-weight:600;">${fmt(r.val)}</span>
+    </div>
+  `).join('');
+
+      // Quote notes (from the form)
+      const notes = document.getElementById('quote-notes').value.trim();
+      const notesBlock = document.getElementById('print-notes-block');
+      // Combine form notes + optional PDF config notes
+      const allNotes = [notes, pdfExtraNotes].filter(Boolean).join('\n');
+      if (allNotes) {
+        document.getElementById('print-notes-text').innerHTML = allNotes.replace(/\n/g, '<br>');
+        notesBlock.style.display = 'block';
+      } else {
+        notesBlock.style.display = 'none';
+      }
+
+      window.print();
+    }
+
+    /* =====================================================
+       RESET SALES FORM
+       ===================================================== */
+    function resetSalesForm() {
+      document.getElementById('client-name').value = '';
+      document.getElementById('client-phone').value = '';
+      document.getElementById('structure-type').value = '';
+      document.getElementById('height').value = '';
+      document.getElementById('width').value = '';
+      document.getElementById('paint-type').value = 'none';
+      document.getElementById('check-frame').checked = false;
+      document.getElementById('check-install').checked = false;
+      document.getElementById('quote-notes').value = '';
+      updateQuote();
+    }
+
+    /* =====================================================
+       TAB SWITCH
+       ===================================================== */
+    function switchTab(tab) {
+      document.getElementById('tab-sales').classList.toggle('active', tab === 'sales');
+      document.getElementById('tab-config').classList.toggle('active', tab === 'config');
+      document.getElementById('btn-sales').classList.toggle('active', tab === 'sales');
+      document.getElementById('btn-config').classList.toggle('active', tab === 'config');
+
+      // Re-add animation
+      const panel = document.getElementById('tab-' + tab);
+      panel.classList.remove('fade-up');
+      void panel.offsetWidth;
+      panel.classList.add('fade-up');
+    }
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+    function fmt(n) {
+      return '$' + (parseFloat(n) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    /* =====================================================
+       RESPONSIVE LAYOUT
+       ===================================================== */
+    function handleResize() {
+      const layout = document.getElementById('sales-layout');
+      if (window.innerWidth < 768) {
+        layout.style.gridTemplateColumns = '1fr';
+      } else {
+        layout.style.gridTemplateColumns = '1fr 380px';
+      }
+
+      const configGrid = document.querySelector('#tab-config > div');
+      if (configGrid) {
+        configGrid.style.gridTemplateColumns = window.innerWidth < 768 ? '1fr' : '1fr 1fr';
+      }
+    }
+
+    /* =====================================================
+       INIT
+       ===================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      const cfg = loadConfig();
+      renderConfigUI(cfg);
+      refreshStructureSelect();
+      refreshPaintSelect();
+      updatePriceLabels();
+      updateQuote();
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+</body>
+
+</html>
